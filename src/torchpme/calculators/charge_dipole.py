@@ -5,10 +5,10 @@ from torch import profiler
 
 from .._utils import _validate_parameters
 from ..lib import generate_kvectors_for_ewald
-from ..potentials import EfieldlDipole
+from ..potentials import InversePowerLawPotential
 
 
-class CalculatorDipole(torch.nn.Module):
+class CalculatorChargeDipole(torch.nn.Module):
     """
     Base calculator for interacting dipoles in the torch interface.
 
@@ -24,16 +24,17 @@ class CalculatorDipole(torch.nn.Module):
 
     def __init__(
         self,
-        potential: EfieldlDipole,
+        potential_q: InversePowerLawPotential,
+        potential_mu: InversePowerLawPotential,
         full_neighbor_list: bool = False,
         prefactor: float = 1.0,
         lr_wavelength: Optional[float] = None,
     ):
         super().__init__()
 
-        if not isinstance(potential, EfieldlDipole):
+        if not isinstance(potential, InversePowerLawPotential):
             raise TypeError(
-                f"Potential must be an instance of EfieldlDipole, got {type(potential)}"
+                f"Potential must be an instance of InversePowerLawPotential, got {type(potential)}"
             )
 
         self.potential = potential
@@ -51,6 +52,7 @@ class CalculatorDipole(torch.nn.Module):
 
     def _compute_rspace(
         self,
+        charges: torch.Tensor,
         dipoles: torch.Tensor,
         neighbor_indices: torch.Tensor,
         neighbor_vectors: torch.Tensor,

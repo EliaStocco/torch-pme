@@ -5,7 +5,7 @@ import torch
 from .potential import Potential
 
 
-class PotentialDipole(torch.nn.Module):
+class EfieldlDipole(torch.nn.Module):
     r"""
     Pair potential energy function between point dipoles.
 
