@@ -1,8 +1,11 @@
 name: Lint
 
 on:
-  pull_request:
-    branches: [main]
+  push:        # Run on *any* push to any branch
+    branches: ['**']
+  pull_request:  # Run on *any* pull request
+    branches: ['**']
+
 
 jobs:
   lint:

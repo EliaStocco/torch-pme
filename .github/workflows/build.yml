@@ -1,10 +1,10 @@
 name: Build
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    # Check all PR
+  push:        # Run on *any* push to any branch
+    branches: ['**']
+  pull_request:  # Run on *any* pull request
+    branches: ['**']
 
 jobs:
   build:
