@@ -2,7 +2,7 @@ from .combined import CombinedPotential
 from .coulomb import CoulombPotential
 from .inversepowerlaw import InversePowerLawPotential
 from .potential import Potential
-from .potential_dipole import EfieldlDipole
+from .potential_dipole import EfieldlDipole, PotentialDipole
 from .spline import SplinePotential
 
 __all__ = [
@@ -12,4 +12,5 @@ __all__ = [
     "Potential",
     "SplinePotential",
     "EfieldlDipole",
+    "PotentialDipole",
 ]

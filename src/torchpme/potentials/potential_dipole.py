@@ -183,3 +183,18 @@ class EfieldlDipole(torch.nn.Module):
 
     self_contribution.__doc__ = Potential.self_contribution.__doc__
     background_correction.__doc__ = Potential.background_correction.__doc__
+
+
+class PotentialDipole(EfieldlDipole):
+
+    def from_dist(self, vector: torch.Tensor) -> torch.Tensor:
+        r"""
+        Full dipolar potential as a function of :math:`\mathbf{r}`.
+
+        :param vector: torch.tensor containing the vectors at which the potential is to
+            be evaluated.
+        """
+        r_mag = torch.norm(vector, dim=1, keepdim=True)
+        scalar_potential = 1.0 / (r_mag**3)
+        r_outer = vector.unsqueeze(1)
+        return scalar_potential.unsqueeze(-1) * torch.eye(3).to(r_outer).unsqueeze(0)

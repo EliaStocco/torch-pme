@@ -5,7 +5,7 @@ import pytest
 import torch
 from ase.io import read
 
-from torchpme import CalculatorDipole, EfieldlDipole
+from torchpme import CalculatorDipole, EfieldlDipole, PotentialDipole
 from torchpme.prefactors import eV_A
 
 sys.path.append(str(Path(__file__).parents[1]))
@@ -27,6 +27,13 @@ forces = [frame.get_forces() for frame in frames]
 @pytest.mark.parametrize("device", DEVICES)
 @pytest.mark.parametrize("dtype", DTYPES)
 class TestDipoles:
+    def charges(self, device, dtype):
+        results = self.parallel_dipoles(device, dtype)
+        Na = results[0].shape[0]
+        results[0] = torch.rand(Na,dtype=dtype,
+            device=device)
+        return results
+        
     def parallel_dipoles(self, device, dtype):
         """Parallel dipoles along the y-axis"""
         positions = torch.tensor(
@@ -69,6 +76,21 @@ class TestDipoles:
             -0.265625, dtype=dtype, device=device
         )  # analytical result
         torch.testing.assert_close(result, expected_result)
+        
+    def test_magnetostatics_direct(self, device, dtype):
+        calculator = CalculatorDipole(
+            potential=PotentialDipole(),
+            full_neighbor_list=False,
+        )
+        calculator.to(device=device, dtype=dtype)
+        pot = calculator(*self.parallel_dipoles(device=device, dtype=dtype))
+        charges = self.charges(device=device, dtype=dtype)[0]
+        result = (pot * charges).sum()
+        print(result)
+        # expected_result = torch.tensor(
+        #     -0.265625, dtype=dtype, device=device
+        # )  # analytical result
+        # torch.testing.assert_close(result, expected_result)
 
     @pytest.mark.parametrize(
         ("smearing", "sr_potential"),
