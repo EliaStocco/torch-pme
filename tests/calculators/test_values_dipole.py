@@ -5,7 +5,7 @@ import pytest
 import torch
 from ase.io import read
 
-from torchpme import CalculatorDipole, EfieldlDipole, PotentialDipole
+from torchpme import CalculatorDipole, EfieldlDipole
 from torchpme.prefactors import eV_A
 
 sys.path.append(str(Path(__file__).parents[1]))
@@ -76,21 +76,6 @@ class TestDipoles:
             -0.265625, dtype=dtype, device=device
         )  # analytical result
         torch.testing.assert_close(result, expected_result)
-        
-    def test_magnetostatics_direct(self, device, dtype):
-        calculator = CalculatorDipole(
-            potential=PotentialDipole(),
-            full_neighbor_list=False,
-        )
-        calculator.to(device=device, dtype=dtype)
-        pot = calculator(*self.parallel_dipoles(device=device, dtype=dtype))
-        charges = self.charges(device=device, dtype=dtype)[0]
-        result = (pot * charges).sum()
-        print(result)
-        # expected_result = torch.tensor(
-        #     -0.265625, dtype=dtype, device=device
-        # )  # analytical result
-        # torch.testing.assert_close(result, expected_result)
 
     @pytest.mark.parametrize(
         ("smearing", "sr_potential"),

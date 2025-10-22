@@ -185,7 +185,7 @@ class EfieldlDipole(torch.nn.Module):
     background_correction.__doc__ = Potential.background_correction.__doc__
 
 
-class PotentialDipole(EfieldlDipole):
+class PotentialDipole(torch.nn.Module):
 
     def from_dist(self, vector: torch.Tensor) -> torch.Tensor:
         r"""
