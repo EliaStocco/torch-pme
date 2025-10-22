@@ -1,8 +1,8 @@
-PotentialDipole
+EfieldlDipole
 ###############
 
-.. autoclass:: torchpme.PotentialDipole
+.. autoclass:: torchpme.EfieldlDipole
     :members:
 
-.. minigallery:: torchpme.PotentialDipole
+.. minigallery:: torchpme.EfieldlDipole
     :add-heading:

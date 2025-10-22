@@ -1,18 +1,18 @@
-from typing import Optional
+from typing import Optional, Union
 
 import torch
 from torch import profiler
 
 from .._utils import _validate_parameters
 from ..lib import generate_kvectors_for_ewald
-from ..potentials import PotentialDipole
+from ..potentials import EfieldlDipole, PotentialDipole
 
 
 class CalculatorDipole(torch.nn.Module):
     """
     Base calculator for interacting dipoles in the torch interface.
 
-    :param potential: a :class:`PotentialDipole` class object containing the functions
+    :param potential: a :class:`EfieldlDipole` class object containing the functions
         that are necessary to compute the various components of the potential, as
         well as the parameters that determine the behavior of the potential itself.
     :param full_neighbor_list: parameter indicating whether the neighbor information
@@ -24,16 +24,18 @@ class CalculatorDipole(torch.nn.Module):
 
     def __init__(
         self,
-        potential: PotentialDipole,
+        potential: Union[EfieldlDipole, PotentialDipole],
         full_neighbor_list: bool = False,
         prefactor: float = 1.0,
         lr_wavelength: Optional[float] = None,
     ):
         super().__init__()
 
-        if not isinstance(potential, PotentialDipole):
+        if not isinstance(potential, EfieldlDipole) and not isinstance(
+            potential, PotentialDipole
+        ):
             raise TypeError(
-                f"Potential must be an instance of PotentialDipole, got {type(potential)}"
+                f"Potential must be an instance of EfieldlDipole or PotentialDipole, got {type(potential)}"
             )
 
         self.potential = potential
@@ -174,7 +176,7 @@ class CalculatorDipole(torch.nn.Module):
             cell=cell,
             positions=positions,
             neighbor_indices=neighbor_indices,
-            neighbor_distances=neighbor_vectors.norm(dim=-1),
+            neighbor_distances=torch.norm(neighbor_vectors, dim=-1),
             smearing=self.potential.smearing,
         )
 

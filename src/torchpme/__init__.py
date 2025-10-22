@@ -14,6 +14,7 @@ from .potentials import (
     CoulombPotential,
     InversePowerLawPotential,
     Potential,
+    EfieldlDipole,
     PotentialDipole,
     SplinePotential,
 )
@@ -31,6 +32,7 @@ __all__ = [
     "InversePowerLawPotential",
     "SplinePotential",
     "CombinedPotential",
+    "EfieldlDipole",
     "PotentialDipole",
     "CalculatorDipole",
 ]

@@ -75,7 +75,7 @@ Added
   (:meth:`torchpme.tuning.tuner.TunerBase.filter_neighbors`)
 * Added an *Ewald* calculator  for computing dipole-dipole interactions
   (:class:`torchpme.CalculatorDipole`) using a dipolar potential
-  (:class:`torchpme.PotentialDipole`)
+  (:class:`torchpme.EfieldlDipole`)
 * Better documentation for for ``cell``, ``charges`` and ``positions`` parameters
 
 Removed

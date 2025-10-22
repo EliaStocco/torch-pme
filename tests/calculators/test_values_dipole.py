@@ -5,7 +5,7 @@ import pytest
 import torch
 from ase.io import read
 
-from torchpme import CalculatorDipole, PotentialDipole
+from torchpme import CalculatorDipole, EfieldlDipole
 from torchpme.prefactors import eV_A
 
 sys.path.append(str(Path(__file__).parents[1]))
@@ -27,6 +27,13 @@ forces = [frame.get_forces() for frame in frames]
 @pytest.mark.parametrize("device", DEVICES)
 @pytest.mark.parametrize("dtype", DTYPES)
 class TestDipoles:
+    def charges(self, device, dtype):
+        results = self.parallel_dipoles(device, dtype)
+        Na = results[0].shape[0]
+        results[0] = torch.rand(Na,dtype=dtype,
+            device=device)
+        return results
+        
     def parallel_dipoles(self, device, dtype):
         """Parallel dipoles along the y-axis"""
         positions = torch.tensor(
@@ -57,7 +64,7 @@ class TestDipoles:
 
     def test_magnetostatics_direct(self, device, dtype):
         calculator = CalculatorDipole(
-            potential=PotentialDipole(),
+            potential=EfieldlDipole(),
             full_neighbor_list=False,
         )
         calculator.to(device=device, dtype=dtype)
@@ -82,7 +89,7 @@ class TestDipoles:
     )
     def test_magnetostatics_sr(self, device, dtype, smearing, sr_potential):
         calculator = CalculatorDipole(
-            potential=PotentialDipole(smearing=smearing),
+            potential=EfieldlDipole(smearing=smearing),
             full_neighbor_list=False,
             lr_wavelength=1.0,
         )
@@ -102,7 +109,7 @@ class TestDipoles:
             1 / (2 * alpha**2)
         ) ** 0.5  # convert espressomd alpha to torch-pme smearing
         calculator = CalculatorDipole(
-            potential=PotentialDipole(smearing=smearing),
+            potential=EfieldlDipole(smearing=smearing),
             full_neighbor_list=False,
             lr_wavelength=0.1,  # this value is heuristic
         )
@@ -126,7 +133,7 @@ class TestDipoles:
             1 / (2 * alpha**2)
         ) ** 0.5  # convert espressomd alpha to torch-pme smearing
         calc = CalculatorDipole(
-            potential=PotentialDipole(smearing=smearing),
+            potential=EfieldlDipole(smearing=smearing),
             full_neighbor_list=False,
             lr_wavelength=0.1,
             prefactor=eV_A,
